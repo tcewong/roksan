@@ -14,13 +14,13 @@ type Series struct {
 }
 
 // InsertSeries inserts series
-func InsertSeries(review Review) (err error) {
+func InsertSeries(series Series) (err error) {
 	db, err := db()
 	if err != nil {
 		return
 	}
 	defer db.Close()
-	_, err = db.Exec("INSERT INTO "+tableSeries+"(name,lang,details,url) VALUES(?,?,?,?)", review.Name, review.Lang, review.Details, review.URL)
+	_, err = db.Exec("INSERT INTO "+tableSeries+"(id,brandId,name,lang,imgPath) VALUES(?,?,?,?,?)", series.ID, series.BrandID, series.Name, series.Lang, series.ImgPath)
 	return
 }
 

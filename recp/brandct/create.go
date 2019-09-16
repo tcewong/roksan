@@ -2,40 +2,38 @@ package brandct
 
 import (
 	"Utils/Data/Format"
-	"fmt"
 	"net/http"
 	"network/protocol/http/api/rest"
 	"roksan/roksandb"
 )
 
-type createShowRoomBundle struct {
-	showroom roksandb.Showroom
+type createBrandBundle struct {
+	brand roksandb.Brand
 }
 
-func createShowRoomHandler() (handler rest.Handler) {
-	handler.Bundle(&createShowRoomBundle{})
-	handler.AddPublicProcess(getCreateShowRoomReq)
-	handler.AddPublicProcess(createShowRoom)
+func createBrandHandler() (handler rest.Handler) {
+	handler.Bundle(&createBrandBundle{})
+	handler.AddPublicProcess(getCreateBrandReq)
+	handler.AddPublicProcess(createBrand)
 	return
 }
 
-func getCreateShowRoomBundle(bundle interface{}) (data *createShowRoomBundle) {
-	data, _ = bundle.(*createShowRoomBundle)
+func getCreateBrandBundle(bundle interface{}) (data *createBrandBundle) {
+	data, _ = bundle.(*createBrandBundle)
 	return
 }
 
-func getCreateShowRoomReq(proto *rest.Protocol, bundle interface{}) (err error) {
-	data := getCreateShowRoomBundle(bundle)
-	if Format.Json2Struct(proto.Body, &data.showroom) != nil {
+func getCreateBrandReq(proto *rest.Protocol, bundle interface{}) (err error) {
+	data := getCreateBrandBundle(bundle)
+	if Format.Json2Struct(proto.Body, &data.brand) != nil {
 		proto.SetRespHeader(http.StatusNotAcceptable)
 	}
 	return
 }
 
-func createShowRoom(proto *rest.Protocol, bundle interface{}) (err error) {
-	data := getCreateShowRoomBundle(bundle)
-	if err := roksandb.InsertShowroom(data.showroom); err != nil {
-		fmt.Println("err:", err)
+func createBrand(proto *rest.Protocol, bundle interface{}) (err error) {
+	data := getCreateBrandBundle(bundle)
+	if err := roksandb.InsertBrand(data.brand); err != nil {
 		proto.SetRespHeader(http.StatusServiceUnavailable)
 	} else {
 		proto.SetRespHeader(http.StatusCreated)

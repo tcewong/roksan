@@ -8,39 +8,39 @@ import (
 	"roksan/roksandb"
 )
 
-type deleteShowRoomBundle struct {
-	name string
+type deleteServiceBundle struct {
+	id string
 }
 
 func deleteServiceHandler() (handler rest.Handler) {
-	handler.Bundle(&deleteShowRoomBundle{})
-	handler.PublicErrProcess(getDeleteShowRoomErr)
-	handler.AddPublicProcess(getDeleteShowRoomReq)
-	handler.AddPublicProcess(getDeleteShowRoom)
+	handler.Bundle(&deleteServiceBundle{})
+	handler.PublicErrProcess(getDeleteServiceErr)
+	handler.AddPublicProcess(getDeleteServiceReq)
+	handler.AddPublicProcess(getDeleteService)
 	return
 }
 
-func getDeleteShowRoomBundle(bundle interface{}) (data *deleteShowRoomBundle) {
-	data, _ = bundle.(*deleteShowRoomBundle)
+func getDeleteServiceBundle(bundle interface{}) (data *deleteServiceBundle) {
+	data, _ = bundle.(*deleteServiceBundle)
 	return
 }
 
-func getDeleteShowRoomErr(proto *rest.Protocol, bundle interface{}, err error) {
+func getDeleteServiceErr(proto *rest.Protocol, bundle interface{}, err error) {
 	proto.SetRespHeader(http.StatusServiceUnavailable)
 	return
 }
 
-func getDeleteShowRoomReq(proto *rest.Protocol, bundle interface{}) (err error) {
-	data := getDeleteShowRoomBundle(bundle)
-	if data.name = Get.UrlVal("name", proto.Req, ""); data.name == "" {
+func getDeleteServiceReq(proto *rest.Protocol, bundle interface{}) (err error) {
+	data := getDeleteServiceBundle(bundle)
+	if data.id = Get.UrlVal("id", proto.Req, ""); data.id == "" {
 		proto.SetRespHeader(http.StatusNotAcceptable)
 	}
 	return
 }
 
-func getDeleteShowRoom(proto *rest.Protocol, bundle interface{}) (err error) {
-	data := getDeleteShowRoomBundle(bundle)
-	if err := roksandb.DeleteShowrooms(data.name); err == nil {
+func getDeleteService(proto *rest.Protocol, bundle interface{}) (err error) {
+	data := getDeleteServiceBundle(bundle)
+	if err := roksandb.DeleteSeries(data.id); err == nil {
 		proto.SetResp(http.StatusAccepted, Format.Struct2Json(data))
 	}
 	return

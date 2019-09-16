@@ -3,47 +3,45 @@ package reviewct
 import (
 	"Utils/Data/Format"
 	"Utils/Data/Get"
-	"fmt"
 	"net/http"
 	"network/protocol/http/api/rest"
 	"roksan/roksandb"
 )
 
-type showRoomBundle struct {
-	Showrooms []roksandb.Showroom `json:"showroom" bson:"showroom"`
-	lang      string
+type reviewBundle struct {
+	Reviews []roksandb.Review `json:"review" bson:"review"`
+	lang    string
 }
 
-func getShowRoomHandler() (handler rest.Handler) {
-	handler.Bundle(&showRoomBundle{})
-	handler.PublicErrProcess(getShowRoomErr)
-	handler.AddPublicProcess(getShowRoomReq)
-	handler.AddPublicProcess(getShowRoom)
+func getReviewHandler() (handler rest.Handler) {
+	handler.Bundle(&reviewBundle{})
+	handler.PublicErrProcess(getReviewErr)
+	handler.AddPublicProcess(getReviewReq)
+	handler.AddPublicProcess(getReview)
 	return
 }
 
-func getShowRoomBundle(bundle interface{}) (data *showRoomBundle) {
-	data, _ = bundle.(*showRoomBundle)
+func getReviewBundle(bundle interface{}) (data *reviewBundle) {
+	data, _ = bundle.(*reviewBundle)
 	return
 }
 
-func getShowRoomErr(proto *rest.Protocol, bundle interface{}, err error) {
-	fmt.Println("err:", err)
+func getReviewErr(proto *rest.Protocol, bundle interface{}, err error) {
 	proto.SetRespHeader(http.StatusServiceUnavailable)
 	return
 }
 
-func getShowRoomReq(proto *rest.Protocol, bundle interface{}) (err error) {
-	data := getShowRoomBundle(bundle)
+func getReviewReq(proto *rest.Protocol, bundle interface{}) (err error) {
+	data := getReviewBundle(bundle)
 	if data.lang = Get.UrlVal("lang", proto.Req, ""); data.lang == "" {
 		proto.SetRespHeader(http.StatusNotAcceptable)
 	}
 	return
 }
 
-func getShowRoom(proto *rest.Protocol, bundle interface{}) (err error) {
-	data := getShowRoomBundle(bundle)
-	data.Showrooms, err = roksandb.FindShowrooms(data.lang)
+func getReview(proto *rest.Protocol, bundle interface{}) (err error) {
+	data := getReviewBundle(bundle)
+	data.Reviews, err = roksandb.FindReviews(data.lang)
 	if err == nil {
 		proto.SetResp(http.StatusAccepted, Format.Struct2Json(data))
 	}

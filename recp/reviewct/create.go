@@ -2,40 +2,38 @@ package reviewct
 
 import (
 	"Utils/Data/Format"
-	"fmt"
 	"net/http"
 	"network/protocol/http/api/rest"
 	"roksan/roksandb"
 )
 
-type createShowRoomBundle struct {
-	showroom roksandb.Showroom
+type createReviewBundle struct {
+	review roksandb.Review
 }
 
-func createShowRoomHandler() (handler rest.Handler) {
-	handler.Bundle(&createShowRoomBundle{})
-	handler.AddPublicProcess(getCreateShowRoomReq)
-	handler.AddPublicProcess(createShowRoom)
+func createReviewHandler() (handler rest.Handler) {
+	handler.Bundle(&createReviewBundle{})
+	handler.AddPublicProcess(getCreateReviewReq)
+	handler.AddPublicProcess(createReview)
 	return
 }
 
-func getCreateShowRoomBundle(bundle interface{}) (data *createShowRoomBundle) {
-	data, _ = bundle.(*createShowRoomBundle)
+func getCreateReviewBundle(bundle interface{}) (data *createReviewBundle) {
+	data, _ = bundle.(*createReviewBundle)
 	return
 }
 
-func getCreateShowRoomReq(proto *rest.Protocol, bundle interface{}) (err error) {
-	data := getCreateShowRoomBundle(bundle)
-	if Format.Json2Struct(proto.Body, &data.showroom) != nil {
+func getCreateReviewReq(proto *rest.Protocol, bundle interface{}) (err error) {
+	data := getCreateReviewBundle(bundle)
+	if Format.Json2Struct(proto.Body, &data.review) != nil {
 		proto.SetRespHeader(http.StatusNotAcceptable)
 	}
 	return
 }
 
-func createShowRoom(proto *rest.Protocol, bundle interface{}) (err error) {
-	data := getCreateShowRoomBundle(bundle)
-	if err := roksandb.InsertShowroom(data.showroom); err != nil {
-		fmt.Println("err:", err)
+func createReview(proto *rest.Protocol, bundle interface{}) (err error) {
+	data := getCreateReviewBundle(bundle)
+	if err := roksandb.InsertReview(data.review); err != nil {
 		proto.SetRespHeader(http.StatusServiceUnavailable)
 	} else {
 		proto.SetRespHeader(http.StatusCreated)

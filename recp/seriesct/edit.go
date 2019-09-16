@@ -7,34 +7,34 @@ import (
 	"roksan/roksandb"
 )
 
-type editShowRoomBundle struct {
-	Name     string            `json:"name" bson:"name"`
-	Showroom roksandb.Showroom `json:"showroom" bson:"showroom"`
+type editSeriesBundle struct {
+	ID     string          `json:"id" bson:"id"`
+	Series roksandb.Series `json:"series" bson:"series"`
 }
 
-func editShowRoomHandler() (handler rest.Handler) {
-	handler.Bundle(&editShowRoomBundle{})
-	handler.AddPublicProcess(getEditShowRoomReq)
-	handler.AddPublicProcess(editShowRoom)
+func editSeriesHandler() (handler rest.Handler) {
+	handler.Bundle(&editSeriesBundle{})
+	handler.AddPublicProcess(getEditSeriesReq)
+	handler.AddPublicProcess(editSeries)
 	return
 }
 
-func getEditShowRoomBundle(bundle interface{}) (data *editShowRoomBundle) {
-	data, _ = bundle.(*editShowRoomBundle)
+func getEditSeriesBundle(bundle interface{}) (data *editSeriesBundle) {
+	data, _ = bundle.(*editSeriesBundle)
 	return
 }
 
-func getEditShowRoomReq(proto *rest.Protocol, bundle interface{}) (err error) {
-	data := getEditShowRoomBundle(bundle)
+func getEditSeriesReq(proto *rest.Protocol, bundle interface{}) (err error) {
+	data := getEditSeriesBundle(bundle)
 	if Format.Json2Struct(proto.Body, data) != nil {
 		proto.SetRespHeader(http.StatusNotAcceptable)
 	}
 	return
 }
 
-func editShowRoom(proto *rest.Protocol, bundle interface{}) (err error) {
-	data := getEditShowRoomBundle(bundle)
-	if err := roksandb.UpdateShowroom(data.Name, data.Showroom); err != nil {
+func editSeries(proto *rest.Protocol, bundle interface{}) (err error) {
+	data := getEditSeriesBundle(bundle)
+	if err := roksandb.UpdateSeries(data.ID, data.Series); err != nil {
 		proto.SetRespHeader(http.StatusServiceUnavailable)
 	} else {
 		proto.SetResp(http.StatusAccepted, Format.Struct2Json(data))

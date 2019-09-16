@@ -15,7 +15,7 @@ func Redirect() (policy router.RoutingPolicy) {
 func handler(w http.ResponseWriter, req *http.Request) {
 	rest.Handlers{
 		GET:    getShowRoomHandler(),
-		POST:   createShowRoomHandler(),
+		POST:   createBrandHandler(),
 		PATCH:  editShowRoomHandler(),
 		DELETE: deleteShowRommHandler(),
 	}.Handle(w, req)

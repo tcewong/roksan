@@ -9,21 +9,21 @@ import (
 	"roksan/roksandb"
 )
 
-type showRoomBundle struct {
-	Showrooms []roksandb.Showroom `json:"showroom" bson:"showroom"`
-	lang      string
+type serviceBundle struct {
+	Services []roksandb.Service `json:"service" bson:"service"`
+	lang     string
 }
 
 func getServiceHandler() (handler rest.Handler) {
-	handler.Bundle(&showRoomBundle{})
+	handler.Bundle(&serviceBundle{})
 	handler.PublicErrProcess(getShowRoomErr)
-	handler.AddPublicProcess(getShowRoomReq)
-	handler.AddPublicProcess(getShowRoom)
+	handler.AddPublicProcess(getServiceReq)
+	handler.AddPublicProcess(getService)
 	return
 }
 
-func getShowRoomBundle(bundle interface{}) (data *showRoomBundle) {
-	data, _ = bundle.(*showRoomBundle)
+func getServiceBundle(bundle interface{}) (data *serviceBundle) {
+	data, _ = bundle.(*serviceBundle)
 	return
 }
 
@@ -33,17 +33,17 @@ func getShowRoomErr(proto *rest.Protocol, bundle interface{}, err error) {
 	return
 }
 
-func getShowRoomReq(proto *rest.Protocol, bundle interface{}) (err error) {
-	data := getShowRoomBundle(bundle)
+func getServiceReq(proto *rest.Protocol, bundle interface{}) (err error) {
+	data := getServiceBundle(bundle)
 	if data.lang = Get.UrlVal("lang", proto.Req, ""); data.lang == "" {
 		proto.SetRespHeader(http.StatusNotAcceptable)
 	}
 	return
 }
 
-func getShowRoom(proto *rest.Protocol, bundle interface{}) (err error) {
-	data := getShowRoomBundle(bundle)
-	data.Showrooms, err = roksandb.FindShowrooms(data.lang)
+func getService(proto *rest.Protocol, bundle interface{}) (err error) {
+	data := getServiceBundle(bundle)
+	data.Services, err = roksandb.FindServices(data.lang)
 	if err == nil {
 		proto.SetResp(http.StatusAccepted, Format.Struct2Json(data))
 	}

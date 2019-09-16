@@ -9,41 +9,41 @@ import (
 	"roksan/roksandb"
 )
 
-type showRoomBundle struct {
-	Showrooms []roksandb.Showroom `json:"showroom" bson:"showroom"`
-	lang      string
+type seriesBundle struct {
+	Serieses []roksandb.Series `json:"series" bson:"series"`
+	name     string
 }
 
-func getShowRoomHandler() (handler rest.Handler) {
-	handler.Bundle(&showRoomBundle{})
-	handler.PublicErrProcess(getShowRoomErr)
-	handler.AddPublicProcess(getShowRoomReq)
-	handler.AddPublicProcess(getShowRoom)
+func getSeriesHandler() (handler rest.Handler) {
+	handler.Bundle(&seriesBundle{})
+	handler.PublicErrProcess(getSeriesErr)
+	handler.AddPublicProcess(getSeriesReq)
+	handler.AddPublicProcess(getSeries)
 	return
 }
 
-func getShowRoomBundle(bundle interface{}) (data *showRoomBundle) {
-	data, _ = bundle.(*showRoomBundle)
+func getSeriesBundle(bundle interface{}) (data *seriesBundle) {
+	data, _ = bundle.(*seriesBundle)
 	return
 }
 
-func getShowRoomErr(proto *rest.Protocol, bundle interface{}, err error) {
+func getSeriesErr(proto *rest.Protocol, bundle interface{}, err error) {
 	fmt.Println("err:", err)
 	proto.SetRespHeader(http.StatusServiceUnavailable)
 	return
 }
 
-func getShowRoomReq(proto *rest.Protocol, bundle interface{}) (err error) {
-	data := getShowRoomBundle(bundle)
-	if data.lang = Get.UrlVal("lang", proto.Req, ""); data.lang == "" {
+func getSeriesReq(proto *rest.Protocol, bundle interface{}) (err error) {
+	data := getSeriesBundle(bundle)
+	if data.name = Get.UrlVal("name", proto.Req, ""); data.name == "" {
 		proto.SetRespHeader(http.StatusNotAcceptable)
 	}
 	return
 }
 
-func getShowRoom(proto *rest.Protocol, bundle interface{}) (err error) {
-	data := getShowRoomBundle(bundle)
-	data.Showrooms, err = roksandb.FindShowrooms(data.lang)
+func getSeries(proto *rest.Protocol, bundle interface{}) (err error) {
+	data := getSeriesBundle(bundle)
+	data.Serieses, err = roksandb.FindSerieses(data.name)
 	if err == nil {
 		proto.SetResp(http.StatusAccepted, Format.Struct2Json(data))
 	}

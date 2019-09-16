@@ -2,40 +2,38 @@ package seriesct
 
 import (
 	"Utils/Data/Format"
-	"fmt"
 	"net/http"
 	"network/protocol/http/api/rest"
 	"roksan/roksandb"
 )
 
-type createShowRoomBundle struct {
-	showroom roksandb.Showroom
+type createSeriesBundle struct {
+	series roksandb.Series
 }
 
-func createShowRoomHandler() (handler rest.Handler) {
-	handler.Bundle(&createShowRoomBundle{})
-	handler.AddPublicProcess(getCreateShowRoomReq)
-	handler.AddPublicProcess(createShowRoom)
+func createSeriesHandler() (handler rest.Handler) {
+	handler.Bundle(&createSeriesBundle{})
+	handler.AddPublicProcess(getCreateSeriesReq)
+	handler.AddPublicProcess(createSeries)
 	return
 }
 
-func getCreateShowRoomBundle(bundle interface{}) (data *createShowRoomBundle) {
-	data, _ = bundle.(*createShowRoomBundle)
+func getCreateSeriesBundle(bundle interface{}) (data *createSeriesBundle) {
+	data, _ = bundle.(*createSeriesBundle)
 	return
 }
 
-func getCreateShowRoomReq(proto *rest.Protocol, bundle interface{}) (err error) {
-	data := getCreateShowRoomBundle(bundle)
-	if Format.Json2Struct(proto.Body, &data.showroom) != nil {
+func getCreateSeriesReq(proto *rest.Protocol, bundle interface{}) (err error) {
+	data := getCreateSeriesBundle(bundle)
+	if Format.Json2Struct(proto.Body, &data.series) != nil {
 		proto.SetRespHeader(http.StatusNotAcceptable)
 	}
 	return
 }
 
-func createShowRoom(proto *rest.Protocol, bundle interface{}) (err error) {
-	data := getCreateShowRoomBundle(bundle)
-	if err := roksandb.InsertShowroom(data.showroom); err != nil {
-		fmt.Println("err:", err)
+func createSeries(proto *rest.Protocol, bundle interface{}) (err error) {
+	data := getCreateSeriesBundle(bundle)
+	if err := roksandb.InsertSeries(data.series); err != nil {
 		proto.SetRespHeader(http.StatusServiceUnavailable)
 	} else {
 		proto.SetRespHeader(http.StatusCreated)
